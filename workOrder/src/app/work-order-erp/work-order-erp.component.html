@@ -1,0 +1,155 @@
+<div class="timeline-shell" (click)="closeMenu()">
+
+
+  <!-- Top header -->
+  <div class="timeline-header">
+  <div class="header-left">
+    <h1>Work Orders</h1>
+   
+    <div class="timescale-block">
+       <label class="timescale-label">Timescale:</label>
+       <div class="timescale-select">
+         <!-- <select [(ngModel)]="zoom" (ngModelChange)="scrollToToday()">-->
+            <select [(ngModel)]="zoom" (ngModelChange)="onZoomChange($event)">
+
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+          </select>
+          
+          <span class="chevron">▾</span>
+       </div>
+   </div>
+
+
+  </div>
+</div>
+
+  <!-- Main grid -->
+  <div class="timeline-body">
+    <!-- Left fixed column -->
+    <div class="workcenter-column">
+      <div class="header-cell">Work Center</div>
+      <div class="workcenter-row" *ngFor="let center of workCenters">
+        {{ center.data.name }}
+      </div>
+    </div>
+
+    <!-- Right scrollable timeline -->
+    <div class="timeline-column">
+      <!-- Header row -->
+      <div class="timeline-header-row">
+        <div class="timeline-header-cell" *ngFor="let cell of headerCells; let i = index">
+          {{ cell }}
+          <span class="current-label" *ngIf="isCurrentPeriod(i)">
+             {{ getCurrentLabel() }}
+         </span>
+        </div>
+      </div>
+
+    
+      
+
+      <!-- Rows -->
+      <div class="timeline-row" *ngFor="let center of workCenters">
+        <div class="timeline-row-bg"></div>
+
+        <!-- Clickable cells -->
+
+       <div class="timeline-cell"
+         *ngFor="let cell of headerCells; let i = index"
+         (click)="onEmptyClick(center, i)">
+       </div>
+
+
+        <!-- Work order bars -->
+        <div
+          class="workorder-bar"
+          *ngFor="let order of workOrders"
+          [class.hidden]="order.data.workCenterId !== center.docId"
+          [ngStyle]="getBarStyle(order)"
+        >
+          <div class="bar-content">
+            <span class="bar-title">{{ order.data.name }}</span>
+            <span [ngClass]="statusClass(order.data.status)">
+              {{ order.data.status | titlecase }}
+            </span>
+            <!--<button class="bar-menu" type="button" (click)="onEdit(order); $event.stopPropagation()">
+            ⋯
+            </button>-->
+            <button class="bar-menu" (click)="toggleMenu(order, $event)">⋯</button>
+            <div class="menu-dropdown" *ngIf="openMenuFor === order.docId">
+                 <button (click)="onEdit(order)">Edit</button>
+                 <button (click)="onDelete(order)">Delete</button>
+           </div>
+
+          </div>
+        </div>
+    
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-out panel -->
+  <div class="panel-backdrop" *ngIf="panelOpen" (click)="closePanel()">
+  <div class="panel" (click)="$event.stopPropagation()">
+
+    <!-- TOP HEADER (Sketch accurate) -->
+    <div class="panel-header">
+      <div class="panel-title-block">
+        <h1>Work Order Details</h1>
+        <p class="subtitle">Specify the dates, name and status for this order</p>
+      </div>
+
+      <div class="panel-buttons">
+        <button class="btn-cancel" type="button" (click)="closePanel()">Cancel</button>
+        <button class="btn-primary" type="submit" form="orderForm" [disabled]="form.invalid">
+          {{ isEdit ? 'Save' : 'Create' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- FORM BODY -->
+    <form id="orderForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="panel-body">
+
+      <div class="form-group">
+        <label>Work Order Name</label>
+        <input formControlName="name" />
+
+        <div class="error"
+         *ngIf="form.controls['name'].touched && form.controls['name'].invalid">
+          Work order name is required.
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select formControlName="status">
+          <option value="open">Open</option>
+          <option value="in-progress">In Progress</option>
+          <option value="complete">Complete</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Start Date</label>
+        <input type="date" formControlName="startDate" />
+      </div>
+
+      <div class="form-group">
+        <label>End Date</label>
+        <input type="date" formControlName="endDate" />
+      </div>
+
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+</div>
