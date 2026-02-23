@@ -1,7 +1,7 @@
 # angular-workorder-ui
 An interactive timeline component that displays work orders across work centers with create/edit functionality.
 
-Note:I developed this wih use of Angular 17
+Note:I developed this application wih the use of Angular 17
 
 Make sure the following are installed before you begin:
 
