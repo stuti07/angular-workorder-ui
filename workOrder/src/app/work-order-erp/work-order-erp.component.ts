@@ -597,7 +597,7 @@ onZoomChange(newZoom: ZoomLevel) {
 
   if (!this.isBrowser) return;
 
-  // wait for DOM to update with new headerCells & grid
+  // Wait for DOM to update with new headerCells & grid
   setTimeout(() => {
     this.scrollToToday();
   }, 0);
